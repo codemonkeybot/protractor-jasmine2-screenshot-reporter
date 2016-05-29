@@ -46,6 +46,7 @@ function Jasmine2ScreenShotReporter(opts) {
         'data-browser="<%= browserName %>">' +
             '<%= mark %>' +
             '<a href="<%= filename[\'main\'] %>"><%= name %></a>' +
+            ' (<a href="<%= logLink %>">Console</a>)' +
             '<% _.forEach(filename, function (val, key) { if (key != \'main\') { %>' +
             ' [<a href="<%= val %>"><%= key %></a>] ' +
             '<% } }) %>' +
@@ -191,6 +192,33 @@ function Jasmine2ScreenShotReporter(opts) {
         } catch(e) {
           console.error('Couldn\'t save metadata: ' + filename);
         }
+    };
+
+    var writeLog = function(data, filename) {
+        var stream = fs.createWriteStream(opts.dest + filename);
+        stream.write(data);
+        stream.end();
+    }
+
+    // create a new javascript Date object based on the timestamp
+    var timestampToDate = function (unix_timestamp) {
+        var date = new Date(unix_timestamp);
+        // hours part from the timestamp
+        var hours = date.getHours();
+        // minutes part from the timestamp
+        var minutes = date.getMinutes();
+        // seconds part from the timestamp
+        var seconds = date.getSeconds();
+
+        var timeValues = [hours, minutes, seconds];
+        timeValues.forEach(function (val) {
+            if (val.length < 2) {
+                // padding
+                val = '0' + val;
+            }
+        });
+        // will display time in 10:30:23 format
+        return hours + ':' + minutes + ':' + seconds;
     };
 
     // returns suite clone or creates one
@@ -461,6 +489,28 @@ function Jasmine2ScreenShotReporter(opts) {
               }
               writeScreenshot(png, spec.filename[key]);
             });
+
+              // ************** Custom browser logger ******************
+              var fullLog = '';
+              var logType = 'browser';
+              browserInstance.driver.manage().logs().getAvailableLogTypes()
+                  .then(function(logTypes) {
+                      if (logTypes.indexOf(logType) > -1) {
+                          var logFileName = file + '.txt';
+                          browserInstance.driver.manage().logs().get(logType).then(function (logsEntries) {
+                              // Write the browser logs to file
+                              var len = logsEntries.length;
+                              for (var i = 0; i < len; ++i) {
+                                  var logEntry = logsEntries[i];
+
+                                  var msg = timestampToDate(logEntry.timestamp) + ' ' + logEntry.type + ' ' + logEntry.message + '\n';
+                                  fullLog += msg;
+                              }
+                              writeLog(fullLog, logFileName);
+                          }, function(err) { console.log(err); });
+                      }
+                  });
+
           });
         });
       });
@@ -524,6 +574,7 @@ function Jasmine2ScreenShotReporter(opts) {
         cssClass: statusCssClass[spec.status],
         duration: getDuration(spec),
         filename: spec.filename,
+          logLink: spec.filename.main.replace('png', 'txt'),
         id:       uuid.v1(),
         mark:     marks[spec.status],
         name:     spec.fullName.replace(suiteName, '').trim(),

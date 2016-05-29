@@ -1,11 +1,11 @@
 {
-  "name": "protractor-jasmine2-screenshot-reporter",
-  "version": "0.3.1",
-  "description": "Use the screenshot reporter to capture screenshots after each executed Protractor test case.",
+  "name": "protractor-jasmine2-reporter",
+  "version": "1.0.0",
+  "description": "Use the reporter to capture screenshots and browser logs after each executed Protractor test case.",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mlison/protractor-jasmine2-screenshot-reporter"
+    "url": "https://github.com/rmpressler/protractor-jasmine2-screenshot-reporter"
   },
   "dependencies": {
     "hat": "0.0.3",
@@ -27,9 +27,9 @@
   "author": "michal.lison@nitor.fi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mlison/protractor-jasmine2-screenshot-reporter/issues"
+    "url": "https://github.com/rmpressler/protractor-jasmine2-screenshot-reporter/issues"
   },
-  "homepage": "https://github.com/mlison/protractor-jasmine2-screenshot-reporter",
+  "homepage": "https://github.com/rmpressler/protractor-jasmine2-screenshot-reporter",
   "contributors": [
     {
       "name": "Antti Arponen",
@@ -55,6 +55,10 @@
       "name": "Mark Veenstra",
       "email": "mark@mobilea.nl",
       "url": "https://github.com/mark-veenstra"
+    },
+    {
+      "name": "Richard Pressler",
+      "url": "https://github.com/rmpressler"
     }
   ],
   "scripts": {}
